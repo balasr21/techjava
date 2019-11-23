@@ -9,17 +9,18 @@ public class Person {
 
     private int age;
 
-    public String getFirstName() {
-        return firstName;
+    private int score;
+
+    public int getScore() {
+        return score;
     }
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                '}';
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public String getFirstName() {
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
@@ -31,6 +32,16 @@ public class Person {
         this.lastName = lastName;
         this.age = age;
     }
+
+    public Person(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public Person(String firstName,int score) {
+        this.firstName = firstName; this.score=score;
+    }
+
+
 
     public String getLastName() {
         return lastName;

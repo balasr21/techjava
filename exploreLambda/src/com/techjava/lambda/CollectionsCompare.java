@@ -1,13 +1,11 @@
 package com.techjava.lambda;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.techjava.lambda.com.techjava.lambda.dto.Person;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class CollectionsCompare {
@@ -57,13 +55,17 @@ public class CollectionsCompare {
         // Print all last name begining with K using lambda expressions - Java 8
 
         System.out.println("List of people starting with K");
-        printBasedOnCondition(people, (p)->p.getLastName().startsWith("K"));
+        printBasedOnCondition(people, (p)->p.getLastName().startsWith("K"),(p)-> System.out.println(p));
 
 
 
         // Print all values
         System.out.println("Printing all values");
-        printBasedOnCondition(people,(p)->true);
+        printBasedOnCondition(people,(p)->true,(p)-> System.out.println(p));
+
+        // Print all values using Method reference
+        System.out.println("Printing all values using Method Reference ");
+        printBasedOnCondition(people,(p)->true,System.out::println);
 
     }
 
@@ -83,10 +85,10 @@ public class CollectionsCompare {
 
     // Post Java 8
 
-    private static void printBasedOnCondition(List<Person> people, Predicate<Person> condition) {
+    private static void printBasedOnCondition(List<Person> people, Predicate<Person> condition, Consumer<Person> consumer) {
         for(Person p:people){
             if(condition.test(p)){
-                System.out.println("Last names starting with expected condition " + p);
+                consumer.accept(p);
             }
         }
     }
