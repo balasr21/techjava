@@ -12,7 +12,7 @@ public class StockAvailabilityDTO {
     @SerializedName("productId")
     private String mProductId;
     @SerializedName("quantity")
-    private Long mQuantity;
+    private int mQuantity;
     @SerializedName("timestamp")
     private String mTimestamp;
 
@@ -32,11 +32,11 @@ public class StockAvailabilityDTO {
         mProductId = productId;
     }
 
-    public Long getQuantity() {
+    public int getQuantity() {
         return mQuantity;
     }
 
-    public void setQuantity(Long quantity) {
+    public void setQuantity(int quantity) {
         mQuantity = quantity;
     }
 
@@ -48,4 +48,10 @@ public class StockAvailabilityDTO {
         mTimestamp = timestamp;
     }
 
+    public StockAvailabilityDTO(String mId, String mProductId, int mQuantity, String mTimestamp) {
+        this.mId = mId;
+        this.mProductId = mProductId;
+        this.mQuantity = mQuantity;
+        this.mTimestamp = mTimestamp;
+    }
 }
