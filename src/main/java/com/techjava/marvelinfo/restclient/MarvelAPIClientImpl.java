@@ -69,7 +69,7 @@ public class MarvelAPIClientImpl {
             }
             continueIteration=false;
 
-            offset++;
+            offset=offset+limit;
         }
 
         return characterDetails;
