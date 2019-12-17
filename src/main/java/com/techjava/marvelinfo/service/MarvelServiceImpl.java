@@ -3,6 +3,7 @@ package com.techjava.marvelinfo.service;
 import com.techjava.marvelinfo.config.CharacterInfo;
 import com.techjava.marvelinfo.dto.CharacterDetailsByIdDTO;
 import com.techjava.marvelinfo.dto.CharacterDetailsDTO;
+import com.techjava.marvelinfo.dto.Thumbnail;
 import com.techjava.marvelinfo.restclient.MarvelAPIClientImpl;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -122,14 +123,19 @@ public class MarvelServiceImpl implements MarvelService {
         return characterDetailsByIdDTO;
     }
 
-
+    /**
+     * translateText - This method uses GOOGLE API to translate text
+     *
+     * @param inputString
+     * @param targetLanguage
+     * @return
+     */
     private String translateText(String inputString,String targetLanguage){
 
         try {
             Translate t = new Translate.Builder(
                     GoogleNetHttpTransport.newTrustedTransport()
                     , GsonFactory.getDefaultInstance(), null)
-                    // Set your application name
                     .setApplicationName("MarvelCharacterInfo")
                     .build();
             Translate.Translations.List list = t.new Translations().list(
@@ -142,7 +148,7 @@ public class MarvelServiceImpl implements MarvelService {
             return response.getTranslations().get(0).getTranslatedText();
         }catch(Exception e){
             logger.error("Error in Translating text {}",e.getMessage());
-            return null;
+            return "Exception received from Translation library,ensure valid language";
         }
 
     }

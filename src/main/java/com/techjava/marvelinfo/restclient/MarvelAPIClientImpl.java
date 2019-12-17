@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -67,7 +64,6 @@ public class MarvelAPIClientImpl {
                     && characterDetilsOffset.getData().getCount()==0){
                 continueIteration=false;
             }
-            continueIteration=false;
 
             offset=offset+limit;
         }
@@ -86,11 +82,10 @@ public class MarvelAPIClientImpl {
      */
     public CharacterDetailsDTO getCharacterDetailsById(Integer characterId){
 
-        CharacterDetailsDTO characterDetails=null;
+        CharacterDetailsDTO characterDetails=new CharacterDetailsDTO();
         HttpEntity<Object> requestEntity = new HttpEntity<>(null, getHttpHeader());
         try{
 
-            logger.info(characterAPIUrl+ "/" + characterId + "?" +getApiHash());
 
             characterDetails          =
                     restTemplate.exchange(characterAPIUrl+ "/" + characterId + "?" +getApiHash(),
@@ -99,6 +94,9 @@ public class MarvelAPIClientImpl {
 
         }catch(HttpClientErrorException hex){
             logger.error("HTTP error {}", hex.getMessage());
+            if(hex.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+                characterDetails.setCode(404l);
+            }
         }catch(Exception e){
             logger.error("Generic error {}",e.getMessage());
         }
@@ -123,7 +121,6 @@ public class MarvelAPIClientImpl {
         HttpEntity<Object> requestEntity = new HttpEntity<>(null, getHttpHeader());
         try{
 
-            logger.info(characterAPIUrl+ "?" + "limit=" + limit + "&offset=" + offset + "&" +getApiHash());
 
           characterDetails          =
                     restTemplate.exchange(characterAPIUrl+ "?" + "limit=" + limit + "&offset=" + offset + "&" +getApiHash(),
@@ -150,7 +147,6 @@ public class MarvelAPIClientImpl {
     private String getApiHash() {
 
         String ts= DateUtils.convertDateToString(new Date(),GlobalConstants.DD_MM_YYYY_HH_MM_SS);
-      //  String ts="1";
 
         return "ts="+ts+"&apikey="+publiceKey+"&hash="+DigestUtils.md5Hex(ts+privateKey+publiceKey).toLowerCase();
 
