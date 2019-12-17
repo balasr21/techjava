@@ -14,6 +14,7 @@ import com.google.api.services.translate.model.TranslationsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ public class MarvelServiceImpl implements MarvelService {
 
     @Autowired
     MarvelAPIClientImpl marvelAPIClient;
+
+    @Value("${google.cloud.api.key}")
+    private String googleCloudKey;
 
     /** The logger. */
     private Logger logger = LoggerFactory.getLogger(MarvelServiceImpl.class);
@@ -134,7 +138,7 @@ public class MarvelServiceImpl implements MarvelService {
                     // Target language
                     targetLanguage);
 
-        //    list.setKey("dddd");
+            list.setKey(googleCloudKey);
             TranslationsListResponse response = list.execute();
             return response.getTranslations().get(0).getTranslatedText();
         }catch(Exception e){
