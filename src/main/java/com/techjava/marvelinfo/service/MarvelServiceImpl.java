@@ -134,7 +134,7 @@ public class MarvelServiceImpl implements MarvelService {
                     // Target language
                     targetLanguage);
 
-            list.setKey("AIzaSyCMVxvWjYDb2zrVTJk66WTzDZp1kSlmlhM");
+        //    list.setKey("dddd");
             TranslationsListResponse response = list.execute();
             return response.getTranslations().get(0).getTranslatedText();
         }catch(Exception e){
