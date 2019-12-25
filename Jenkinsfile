@@ -11,7 +11,8 @@ node{
    sh 'docker build -t balasr21/marvelinfo:1.0.0  .' 
    
    withCredentials([string(credentialsId: 'dpassword', variable: 'dpwd')]) {
-     sh "docker login -u balasr3 -p ${docker-password} "
+     print "${dpwd}"
+     sh "docker login -u balasr3 -p ${dpwd} "
 	 sh 'docker push balasr21/marvelinfo:1.0.0'
    }	
    
