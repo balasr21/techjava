@@ -14,7 +14,6 @@ node{
      sh "docker login -u balasr3 -p  ${docker-pwd} "
    } 
     
-    sh "docker push balasr3/marvelinfo:1.0.0"
   }
 
 }
