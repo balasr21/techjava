@@ -8,12 +8,12 @@ node{
   }
   stage('PackageAndPush'){
   
-   sh 'docker build -t balasr21/marvelinfo:1.0.0  .' 
+   sh 'docker build -t balasr3/marvelinfo:1.0.0  .' 
    
    withCredentials([string(credentialsId: 'dpassword', variable: 'dpwd')]) {
      print "${dpwd}"
      sh "docker login -u balasr3 -p ${dpwd} "
-	 sh 'docker push balasr21/marvelinfo:1.0.0'
+	 sh 'docker push balasr3/marvelinfo:1.0.0'
    }	
    
   }
