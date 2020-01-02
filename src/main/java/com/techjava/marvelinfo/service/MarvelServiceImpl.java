@@ -1,9 +1,13 @@
 package com.techjava.marvelinfo.service;
 
 import com.techjava.marvelinfo.config.CharacterInfo;
+import com.techjava.marvelinfo.constant.GlobalConstants;
+import com.techjava.marvelinfo.domain.CharacterDetails;
 import com.techjava.marvelinfo.dto.CharacterDetailsByIdDTO;
 import com.techjava.marvelinfo.dto.CharacterDetailsDTO;
-import com.techjava.marvelinfo.dto.Thumbnail;
+import com.techjava.marvelinfo.exception.InvalidCharacterException;
+import com.techjava.marvelinfo.exception.InvalidLanguageException;
+import com.techjava.marvelinfo.repository.CharacterDetailsRepository;
 import com.techjava.marvelinfo.restclient.MarvelAPIClientImpl;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -15,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +37,9 @@ public class MarvelServiceImpl implements MarvelService {
 
     @Autowired
     MarvelAPIClientImpl marvelAPIClient;
+
+    @Autowired
+    CharacterDetailsRepository characterDetailsRepository;
 
     @Value("${google.cloud.api.key}")
     private String googleCloudKey;
@@ -86,14 +94,17 @@ public class MarvelServiceImpl implements MarvelService {
             characterDetailsByIdDTO.setName(characterInfo.getData().getResults().get(0).getName());
             characterDetailsByIdDTO.setDescription(characterInfo.getData().getResults().get(0).getDescription());
             characterDetailsByIdDTO.setThumbnail(characterInfo.getData().getResults().get(0).getThumbnail());
+
+            populateSearchDetails(characterDetailsByIdDTO);
+
        }else if(characterInfo.getCode() == HttpStatus.NOT_FOUND.value()){
-            characterDetailsByIdDTO.setId(characterId);
-            characterDetailsByIdDTO.setName("Character not found");
-            characterDetailsByIdDTO.setDescription("Character not found");
+            throw new InvalidCharacterException(GlobalConstants.INVALID_CHARACTER);
         }
         return characterDetailsByIdDTO;
 
     }
+
+
 
     /**
      * getCharacterInfoTranslationById This method retrieves
@@ -116,12 +127,12 @@ public class MarvelServiceImpl implements MarvelService {
             characterDetailsByIdDTO.setDescription(translateText(characterInfo.getData().getResults().get(0).getDescription(),languageCode));
             characterDetailsByIdDTO.setThumbnail(characterInfo.getData().getResults().get(0).getThumbnail());
         }else if(characterInfo.getCode() == HttpStatus.NOT_FOUND.value()){
-            characterDetailsByIdDTO.setId(characterId);
-            characterDetailsByIdDTO.setName("Character not found");
-            characterDetailsByIdDTO.setDescription("Character not found");
+            throw new InvalidCharacterException(GlobalConstants.INVALID_CHARACTER);
         }
         return characterDetailsByIdDTO;
     }
+
+
 
     /**
      * translateText - This method uses GOOGLE API to translate text
@@ -148,7 +159,35 @@ public class MarvelServiceImpl implements MarvelService {
             return response.getTranslations().get(0).getTranslatedText();
         }catch(Exception e){
             logger.error("Error in Translating text {}",e.getMessage());
-            return "Exception received from Translation library,ensure valid language";
+            throw new InvalidLanguageException(GlobalConstants.INVALID_LANGUAGE);
+        }
+
+    }
+
+    @Override
+    public List<CharacterDetailsByIdDTO> getCharactersLastSearches() {
+        int pageNo=0;
+        return characterDetailsRepository.getLastCharacterSearch(PageRequest.of(pageNo,GlobalConstants.NO_OF_LAST_SEARCHES));
+    }
+
+    /**
+     * populateSearchDetails - This method populates current search details into DB
+     * @param characterDetailsByIdDTO
+     */
+    private void populateSearchDetails(CharacterDetailsByIdDTO characterDetailsByIdDTO) {
+
+        CharacterDetails characterDetails=new CharacterDetails();
+
+        try{
+            characterDetails.setId(characterDetailsByIdDTO.getId());
+            characterDetails.setName(characterDetailsByIdDTO.getName());
+            characterDetails.setDescription(characterDetailsByIdDTO.getDescription());
+            characterDetails.setExtension(characterDetailsByIdDTO.getThumbnail().getExtension());
+            characterDetails.setThumbnailPath(characterDetailsByIdDTO.getThumbnail().getPath());
+            characterDetails.setSearchTimestamp(new Date());
+            characterDetailsRepository.save(characterDetails);
+        }catch(Exception e){
+            logger.error("Error in saving search details {}",e.getMessage());
         }
 
     }

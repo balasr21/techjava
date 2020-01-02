@@ -64,4 +64,10 @@ public class MarvelInfoController {
         }
     }
 
+
+    @GetMapping(value="/characters/lastsearches")
+    public ResponseEntity<List<CharacterDetailsByIdDTO>> getLastCharacterSearches(){
+        return new ResponseEntity<>(marvelService.getCharactersLastSearches(),HttpStatus.OK);
+    }
+
 }

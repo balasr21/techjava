@@ -23,5 +23,14 @@ public final class GlobalConstants {
     /** The Constant TYPE_STREAM. */
     public static final String TYPE_STREAM = "octet-stream";
 
+    /** The Constatnt INVALID_CHARACTER. */
+    public static final String INVALID_CHARACTER="Invalid Character given for search";
+
+    /** The Constatnt INVALID_LANGUAGE. */
+    public static final String INVALID_LANGUAGE="Invalid Language given for translation";
+
+    /** The Constant NO_OF_LAST_SEARCHES. */
+    public static final Integer NO_OF_LAST_SEARCHES=3;
+
 
 }

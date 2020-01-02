@@ -1,0 +1,22 @@
+# Thie file sets up in-cluster service discovery for our app.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "marvelinfo.fullname" . }}
+  labels:
+    app: {{ include "marvelinfo.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  # We want to listen on the default HTTP port, and send traffic to the port
+  # our docker image is acutally listening on (which is defined in
+  # deployment.yaml)
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "marvelinfo.selectorLabels" . | nindent 4 }}

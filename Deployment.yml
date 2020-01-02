@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy
+spec:
+  replicas: 1
+  selector:
+        matchLabels:
+            component: api
+  template:
+    metadata:
+        labels:
+            component: api
+    spec:
+        containers:
+            - name: marvel
+              image: balasr3/marvelinfo:1.0.0
+              ports:
+                - containerPort: 8080

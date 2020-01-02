@@ -45,7 +45,23 @@ public class CharacterDetailsByIdDTO {
         return thumbnail;
     }
 
+    public CharacterDetailsByIdDTO(Integer id,String name, String description, String path,String extension) {
+        this.id=id;
+        this.thumbnail=new Thumbnail();
+        this.name = name;
+        this.description = description;
+        this.thumbnail.setExtension(extension);
+        this.thumbnail.setPath(path);
+
+    }
+
+    public CharacterDetailsByIdDTO(){
+
+    }
+
     public void setThumbnail(Thumbnail thumbnail) {
         this.thumbnail = thumbnail;
     }
+
+
 }

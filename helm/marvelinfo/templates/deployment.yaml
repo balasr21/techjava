@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "marvelinfo.fullname" . }}
+  labels:
+    app: {{ include "marvelinfo.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      {{- include "marvelinfo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "marvelinfo.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "marvelinfo.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "docker-image" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "docker-image" . }}
+          imagePullPolicy: Always
+          ports:
+          # The port that our container listens for HTTP requests on.
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      env:
+          - name: MARVEL_API_PRIVATE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: marvel-app-secret
+                key: marvel-api-private-key
+          - name: MARVEL_API_PUBLIC_KEY
+            valueFrom:
+              secretKeyRef:
+                name: marvel-app-secret
+                key: marvel-api-public-key    
+          - name: GOOGLE_TRANSLATE_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: marvel-app-secret
+                key: google-translate-api-key
+          - name: MYSQL_HOST
+            valueFrom:
+              secretKeyRef:
+                name: marvel-app-secret
+                key: {{ include "mysql.fullname" . }}                
+          - name: MYSQL_USERID
+            valueFrom:
+              secretKeyRef:
+                name: marvel-app-secret
+                key: mysql-userid
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: marvel-app-secret
+                key: mysql-password
+                
