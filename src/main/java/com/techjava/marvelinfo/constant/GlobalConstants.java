@@ -31,6 +31,9 @@ public final class GlobalConstants {
 
     /** The Constant NO_OF_LAST_SEARCHES. */
     public static final Integer NO_OF_LAST_SEARCHES=3;
+    
+    /** The Constant SEARCH_EXCEPTION. */
+    public static final String SEARCH_EXCEPTION="Character search API exception";
 
 
 }

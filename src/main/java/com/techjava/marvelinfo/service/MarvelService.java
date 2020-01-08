@@ -28,4 +28,7 @@ public interface MarvelService {
     CharacterDetailsByIdDTO getCharacterInfoTranslationById(Integer characterId,String languageCode);
 
     List<CharacterDetailsByIdDTO> getCharactersLastSearches();
+    
+    String translateText(String inputString,String targetLanguage);
+    
 }

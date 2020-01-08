@@ -7,6 +7,7 @@ import com.techjava.marvelinfo.dto.CharacterDetailsByIdDTO;
 import com.techjava.marvelinfo.dto.CharacterDetailsDTO;
 import com.techjava.marvelinfo.exception.InvalidCharacterException;
 import com.techjava.marvelinfo.exception.InvalidLanguageException;
+import com.techjava.marvelinfo.exception.SearchException;
 import com.techjava.marvelinfo.repository.CharacterDetailsRepository;
 import com.techjava.marvelinfo.restclient.MarvelAPIClientImpl;
 
@@ -62,7 +63,7 @@ public class MarvelServiceImpl implements MarvelService {
 
         List<CharacterDetailsDTO> characterDetails = characterInfo.getCharacterDetails(new Date());
 
-        if(characterDetails!=null) {
+        if(characterDetails!=null && !characterDetails.isEmpty()) {
             List<List<Integer>> allCharacters = characterDetails.stream().map(ch -> ch.getData().getResults().stream().map(ids -> ids.getId()).collect(Collectors.toList())).collect(Collectors.toList());
 
             return allCharacters.stream().reduce(new ArrayList<>(), (l1, l2) -> {
@@ -97,9 +98,11 @@ public class MarvelServiceImpl implements MarvelService {
 
             populateSearchDetails(characterDetailsByIdDTO);
 
-       }else if(characterInfo.getCode() == HttpStatus.NOT_FOUND.value()){
+       }else if(characterInfo!=null && characterInfo.getCode()!=null && characterInfo.getCode() == HttpStatus.NOT_FOUND.value()){
             throw new InvalidCharacterException(GlobalConstants.INVALID_CHARACTER);
-        }
+       }else {
+    	   throw new SearchException(GlobalConstants.SEARCH_EXCEPTION);
+       }
         return characterDetailsByIdDTO;
 
     }
@@ -141,7 +144,8 @@ public class MarvelServiceImpl implements MarvelService {
      * @param targetLanguage
      * @return
      */
-    private String translateText(String inputString,String targetLanguage){
+    @Override
+    public String translateText(String inputString,String targetLanguage){
 
         try {
             Translate t = new Translate.Builder(

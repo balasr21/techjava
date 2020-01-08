@@ -57,7 +57,7 @@ public class MarvelInfoController {
     @GetMapping(value="/characters/{characterid}")
     public ResponseEntity<CharacterDetailsByIdDTO> getCharacterTranslationById(@ApiParam(value="CharacterId") @PathVariable("characterid") Integer characterid,
                                                                               @ApiParam(value="Optional parameter for passing language code in ISO-639-1 convention") @QueryParam("language") Optional<String> language){
-        if(language.isPresent()) {
+        if(language!=null && language.isPresent()) {
             return new ResponseEntity<>(marvelService.getCharacterInfoTranslationById(characterid, language.get()), HttpStatus.OK);
         }else{
             return new ResponseEntity<>(marvelService.getCharacterInfoById(characterid),HttpStatus.OK);
